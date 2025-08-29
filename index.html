@@ -1,0 +1,403 @@
+import React, { useState } from 'react';
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, Calculator } from 'lucide-react';
+
+const ElevatorPhysicsTutorial = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [showHint, setShowHint] = useState({});
+  const [feedback, setFeedback] = useState({});
+
+  const steps = [
+    {
+      id: 'setup',
+      title: 'Problem Setup',
+      content: `A construction elevator breaks its cable at the 6th floor (25 m height) while moving up at 3.0 m/s.
+      
+Let's identify what we know:
+• Initial height: h₀ = 25 m
+• Initial velocity: v₀ = +3.0 m/s (upward)
+• Acceleration: a = -9.8 m/s² (gravity, downward)
+• Final height: h = 0 m (ground level)`,
+      type: 'info'
+    },
+    {
+      id: 'part_a_setup',
+      title: 'Part A: Find Impact Velocity',
+      content: `We need to find the elevator's velocity when it hits the ground.
+
+Which kinematic equation should we use when we know:
+- Initial velocity (v₀)
+- Displacement (Δy)
+- Acceleration (a)
+- Want to find: final velocity (v)`,
+      type: 'multiple_choice',
+      question: 'Choose the best kinematic equation:',
+      options: [
+        'v = v₀ + at',
+        'y = y₀ + v₀t + ½at²',
+        'v² = v₀² + 2aΔy',
+        'y = y₀ + ½(v₀ + v)t'
+      ],
+      correct: 2,
+      explanation: 'v² = v₀² + 2aΔy is perfect because we know v₀, a, and Δy, and we want to find v.'
+    },
+    {
+      id: 'part_a_displacement',
+      title: 'Calculate Displacement',
+      content: `First, let's find the displacement (Δy).
+
+The elevator starts at 25 m and ends at 0 m (ground level).`,
+      type: 'input',
+      question: 'What is the displacement Δy? (Include the sign)',
+      unit: 'm',
+      correct: -25,
+      tolerance: 0.1,
+      hint: 'Displacement = final position - initial position = 0 - 25 = ?'
+    },
+    {
+      id: 'part_a_calculation',
+      title: 'Apply the Kinematic Equation',
+      content: `Now use: v² = v₀² + 2aΔy
+
+Substituting our values:
+• v₀ = +3.0 m/s
+• a = -9.8 m/s²  
+• Δy = -25 m`,
+      type: 'input',
+      question: 'Calculate v² first. What is v₀² + 2aΔy?',
+      unit: 'm²/s²',
+      correct: 499,
+      tolerance: 1,
+      hint: 'v² = (3.0)² + 2(-9.8)(-25) = 9 + 490 = 499 m²/s²'
+    },
+    {
+      id: 'part_a_final',
+      title: 'Find Final Velocity',
+      content: `Now take the square root to find the velocity magnitude.
+
+Since we calculated v² = 499 m²/s², we need v = √(499)`,
+      type: 'input',
+      question: 'What is the velocity magnitude? (Use correct significant figures)',
+      unit: 'm/s',
+      correct: 22.3,
+      tolerance: 0.1,
+      hint: '√(499) = 22.338... Round to 3 significant figures to match the given data.'
+    },
+    {
+      id: 'part_a_direction',
+      title: 'Velocity Direction',
+      content: `The magnitude is 22.3 m/s, but what about direction?
+
+Since the elevator is moving downward when it hits the ground, the velocity should be negative.`,
+      type: 'multiple_choice',
+      question: 'What is the complete velocity on impact?',
+      options: [
+        '+22.3 m/s',
+        '-22.3 m/s',
+        '22 m/s',
+        '-22 m/s'
+      ],
+      correct: 1,
+      explanation: 'The velocity is -22.3 m/s (negative because it\'s moving downward).'
+    },
+    {
+      id: 'part_b_setup',
+      title: 'Part B: Time to Impact',
+      content: `Now we need to find how much time elapses before impact.
+
+We can use: y = y₀ + v₀t + ½at²
+
+Setting up the equation:
+0 = 25 + 3.0t + ½(-9.8)t²
+0 = 25 + 3.0t - 4.9t²`,
+      type: 'info'
+    },
+    {
+      id: 'part_b_rearrange',
+      title: 'Rearrange to Standard Form',
+      content: `Rearranging: 4.9t² - 3.0t - 25 = 0
+
+This is a quadratic equation in the form: at² + bt + c = 0`,
+      type: 'input',
+      question: 'What are the coefficients? Enter as: a,b,c (separated by commas)',
+      correct: '4.9,-3.0,-25',
+      tolerance: 0.1,
+      hint: 'Compare 4.9t² - 3.0t - 25 = 0 with at² + bt + c = 0'
+    },
+    {
+      id: 'part_b_quadratic',
+      title: 'Apply Quadratic Formula',
+      content: `Using the quadratic formula: t = (-b ± √(b² - 4ac)) / (2a)
+
+With a = 4.9, b = -3.0, c = -25
+
+First, calculate the discriminant: b² - 4ac`,
+      type: 'input',
+      question: 'What is b² - 4ac?',
+      correct: 499,
+      tolerance: 1,
+      hint: '(-3.0)² - 4(4.9)(-25) = 9 + 490 = 499'
+    },
+    {
+      id: 'part_b_solutions',
+      title: 'Solve for Time',
+      content: `t = (3.0 ± √499) / (2 × 4.9)
+t = (3.0 ± 22.338) / 9.8
+
+This gives us two solutions:
+t₁ = (3.0 + 22.338) / 9.8 ≈ 2.59 s
+t₂ = (3.0 - 22.338) / 9.8 ≈ -1.97 s`,
+      type: 'multiple_choice',
+      question: 'Which solution is physically meaningful?',
+      options: [
+        't = 2.59 s (positive time)',
+        't = -1.97 s (negative time)',
+        'Both solutions',
+        'Neither solution'
+      ],
+      correct: 0,
+      explanation: 'Only positive time makes physical sense. The elevator takes 2.6 s to fall (rounded to 2 significant figures).'
+    },
+    {
+      id: 'summary',
+      title: 'Solution Summary',
+      content: `**Final Answers:**
+
+**Part A:** Velocity on impact = **-22.3 m/s**
+- Used v² = v₀² + 2aΔy
+- Magnitude: 22.3 m/s, Direction: downward (negative)
+
+**Part B:** Time to impact = **2.6 s**
+- Used y = y₀ + v₀t + ½at²
+- Solved quadratic equation, chose positive root
+
+**Key Physics Concepts:**
+- Free fall motion with initial velocity
+- Proper use of kinematic equations
+- Significant figures based on given data
+- Vector nature of velocity (magnitude and direction)`,
+      type: 'summary'
+    }
+  ];
+
+  const checkAnswer = (stepId, userAnswer, correctAnswer, tolerance = 0) => {
+    if (typeof correctAnswer === 'string') {
+      return userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase();
+    }
+    
+    if (typeof correctAnswer === 'number') {
+      const numAnswer = parseFloat(userAnswer);
+      return Math.abs(numAnswer - correctAnswer) <= tolerance;
+    }
+    
+    return userAnswer === correctAnswer;
+  };
+
+  const handleAnswer = (stepId, answer) => {
+    const step = steps[currentStep];
+    let isCorrect = false;
+    
+    if (step.type === 'multiple_choice') {
+      isCorrect = answer === step.correct;
+    } else if (step.type === 'input') {
+      isCorrect = checkAnswer(stepId, answer, step.correct, step.tolerance);
+    }
+    
+    setAnswers(prev => ({ ...prev, [stepId]: answer }));
+    setFeedback(prev => ({ 
+      ...prev, 
+      [stepId]: {
+        isCorrect,
+        message: isCorrect ? 'Correct!' : 'Not quite right. Try again or check the hint.'
+      }
+    }));
+  };
+
+  const nextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+      setShowHint({});
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const resetTutorial = () => {
+    setCurrentStep(0);
+    setAnswers({});
+    setShowHint({});
+    setFeedback({});
+  };
+
+  const step = steps[currentStep];
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-indigo-800 flex items-center gap-2">
+            <Calculator className="w-8 h-8" />
+            Elevator Physics Tutorial
+          </h1>
+          <button
+            onClick={resetTutorial}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reset
+          </button>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Progress</span>
+            <span>{currentStep + 1} of {steps.length}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Step content */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{step.title}</h2>
+          
+          <div className="bg-gray-50 p-6 rounded-lg mb-6">
+            <pre className="whitespace-pre-wrap font-sans text-gray-700 leading-relaxed">
+              {step.content}
+            </pre>
+          </div>
+
+          {/* Interactive elements */}
+          {step.type === 'multiple_choice' && (
+            <div>
+              <p className="font-medium mb-4">{step.question}</p>
+              <div className="space-y-2">
+                {step.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswer(step.id, index)}
+                    className={`w-full p-3 text-left rounded-lg border-2 transition-colors ${
+                      answers[step.id] === index
+                        ? feedback[step.id]?.isCorrect
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-red-500 bg-red-50'
+                        : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+              
+              {feedback[step.id] && (
+                <div className={`mt-4 p-3 rounded-lg ${
+                  feedback[step.id].isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    {feedback[step.id].isCorrect ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                    {feedback[step.id].message}
+                  </div>
+                  {feedback[step.id].isCorrect && step.explanation && (
+                    <p className="mt-2 text-sm">{step.explanation}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {step.type === 'input' && (
+            <div>
+              <p className="font-medium mb-4">{step.question}</p>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={answers[step.id] || ''}
+                  onChange={(e) => setAnswers(prev => ({ ...prev, [step.id]: e.target.value }))}
+                  className="flex-1 p-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                  placeholder="Enter your answer..."
+                />
+                <span className="text-gray-600 font-medium">{step.unit}</span>
+                <button
+                  onClick={() => handleAnswer(step.id, answers[step.id])}
+                  className="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  Check
+                </button>
+              </div>
+              
+              {feedback[step.id] && (
+                <div className={`mt-4 p-3 rounded-lg ${
+                  feedback[step.id].isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    {feedback[step.id].isCorrect ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                    {feedback[step.id].message}
+                  </div>
+                </div>
+              )}
+
+              {step.hint && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => setShowHint(prev => ({ ...prev, [step.id]: !prev[step.id] }))}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm"
+                  >
+                    {showHint[step.id] ? 'Hide Hint' : 'Show Hint'}
+                  </button>
+                  {showHint[step.id] && (
+                    <div className="mt-2 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800">
+                      {step.hint}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={prevStep}
+            disabled={currentStep === 0}
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              currentStep === 0 
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Previous
+          </button>
+
+          <div className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </div>
+
+          <button
+            onClick={nextStep}
+            disabled={currentStep === steps.length - 1}
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+              currentStep === steps.length - 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+            }`}
+          >
+            Next
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ElevatorPhysicsTutorial;
